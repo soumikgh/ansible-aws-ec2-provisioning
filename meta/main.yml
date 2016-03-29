@@ -1,0 +1,20 @@
+galaxy_info:
+  author: Giancarlo Rubio
+  categories:
+  - development
+  description: Create, starte or  terminate an instance in ec2.
+  company: VivaReal
+  license: license (BSD)
+  min_ansible_version: 2.0.1
+  galaxy_tags:
+    - development
+    - automation
+    - cloud
+  platforms:
+  - name: CentOS
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - all
+dependencies: []
