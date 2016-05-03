@@ -25,7 +25,8 @@ Role Variables
 | ec2_key_name | yes  |   |   |key pair to use on the instance|
 | ec2_monitoring  |  no | yes  | yes, no |  enable detailed monitoring (CloudWatch) for instance | 
 | ec2_vpc_subnet_id | yes  |   || the subnet ID in which to launch the instance (VPC)  |
-| ec2_volumes    | no | /dev/sda1, gp2, 8GB, delete on termination | |a list of hash/dictionaries of volumes to add to the new instance; '[{"key":"value", "key":"value"}]'; keys allowed are - device_name (str; required), delete_on_termination (bool; False), device_type (deprecated), ephemeral (str), encrypted (bool; False), snapshot (str), volume_type (str), iops (int) - device_type is deprecated use volume_type, iops must be set when volume_type='io1', ephemeral and snapshot are mutually exclusive.  |
+| ec2_user_data | no | | | opaque blob of data which is made available to the ec2 instance |
+| ec2_volumes    | no | | |a list of hash/dictionaries of volumes to add to the new instance; '[{"key":"value", "key":"value"}]'; keys allowed are - device_name (str; required), delete_on_termination (bool; False), device_type (deprecated), ephemeral (str), encrypted (bool; False), snapshot (str), volume_type (str), iops (int) - device_type is deprecated use volume_type, iops must be set when volume_type='io1', ephemeral and snapshot are mutually exclusive.  |
 | aws_resource_tags  | yes  |   | | a hash/dictionary of tags to add to the new instance or for starting/stopping instance by tag; '{"key":"value"}' and '{"VREnv":"PROD","VRProject":"sample","VRTeam":"infra", "Name":"instance_name"}' |
 | state |  no |  present |present, absent,running, stopped| create or terminate instances  |
 | region |  yes |   || The AWS region to use. Must be specified if ec2_url is not used. If not specified then the value of the EC2_REGION environment variable, if any, is used. See http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region  |
@@ -65,6 +66,8 @@ Example Playbook
         ec2_instance_type: t2.small
         ec2_instance_profile_name: aws-elasticbeanstalk-ec2-role
         ec2_base_image: ami-8fcee4e5
+        ec2_user_data:|
+            docker run nginx
         vivareal_project_name: my-ami
         vivareal_build_version: 1
         vivareal_project_build: "{{ vivareal_project_name }}-{{ vivareal_build_version}}
