@@ -27,6 +27,7 @@
     group_id: "{{ ec2_sg_id }}"
     instance_type: "{{ ec2_instance_type | default('t2.micro') }}"
     instance_profile_name:  "{{ ec2_instance_profile_name | default ('')}}"
+    user_data: "{{ ec2_user_data | default (omit) }}"
     image: "{{ ec2_base_image }}"
     key_name: "{{ ec2_key_name }}"
     monitoring: "{{ ec2_monitoring | default('yes') }}"
@@ -34,7 +35,7 @@
     vpc_subnet_id: "{{ ec2_vpc_subnet_id }}"
     instance_tags: "{{ aws_resource_tags }}"
     state: "{{ state | default('present') }}"
-    volumes: "{{ ec2_volumes }}"
+    volumes: "{{ ec2_volumes | default(omit) }}"
   register: ec2
 
 - name: Add new instance to host group
