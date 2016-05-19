@@ -37,8 +37,12 @@
     volumes: "{{ ec2_volumes }}"
   register: ec2
 
-- name: Add new instance to host group
+- name: Add new instance to host group (private_ip)
   add_host: hostname="{{ item.private_ip }}" groupname=ec2_launched ec2_id="{{ item.id }}"
+  with_items: "{{ ec2.instances }}"
+
+- name: Add new instance to host group (public_ip)
+  add_host: hostname="{{ item.public_ip }}" groupname=ec2_launched_public_ip ec2_id="{{ item.id }}"
   with_items: "{{ ec2.instances }}"
 
 - name: Wait for SSH to come up
