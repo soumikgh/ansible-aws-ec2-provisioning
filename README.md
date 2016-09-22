@@ -55,7 +55,7 @@ Example Playbook
          'VREnv': 'PROD',
          'VRProject': 'infra-ansible',
          'VRTeam': 'infra',
-         'zabbix-metadata': 'if-ansible-sample'
+         'zabbix-metadata': 'if-ansible-sample' }
         region: us-east-1
         ec2_sg_id: ['sg-32f1634b']
         ec2_vpc_subnet_id: subnet-0959b37f
@@ -70,7 +70,7 @@ Example Playbook
             docker run nginx
         vivareal_project_name: my-ami
         vivareal_build_version: 1
-        vivareal_project_build: "{{ vivareal_project_name }}-{{ vivareal_build_version}}
+        vivareal_project_build: "{{ vivareal_project_name }}-{{ vivareal_build_version}}"
         ec2_volumes:
           - device_name: /dev/sda1
             volume_type: gp2
