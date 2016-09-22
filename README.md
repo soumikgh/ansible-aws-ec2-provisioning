@@ -1,13 +1,13 @@
 AWS ec2 provision
-=========
+=================
 
-This ansible role create, terminate, start or stop an instance in ec2. 
+This ansible role creates, terminates, start or stop an instance in ec2. 
 
 Requirements
 ------------
 
 - Ansible 2.0.1 or higher.
-- Tested on Ubuntu 14.04 and Amazon 7
+- Tested on Ubuntu 14.04, CentOS 7 and Amazon 7
 
 Role Variables
 --------------
@@ -31,21 +31,22 @@ Role Variables
 | state |  no |  present |present, absent,running, stopped| create or terminate instances  |
 | region |  yes |   || The AWS region to use. Must be specified if ec2_url is not used. If not specified then the value of the EC2_REGION environment variable, if any, is used. See http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region  |
 | vivareal_project_build | yes | | | ec2 instance name |
+| instance_ids | no | | | ec2 instance id's, required when setting state to absent |
 
 
 Ansible modules
---------------
+---------------
 [ec2](http://docs.ansible.com/ansible/ec2_module.html)
 
 [ec2_ami_find](http://docs.ansible.com/ansible/ec2_ami_find_module.html)
 
 Output variables
---------------
+----------------
     ec2_ami_instance_id: launched instance id
     ec2_launched: registered host group
 
-Example Playbook
-----------------
+Example Playbook (creation)
+---------------------------
 
    
     - hosts: localhost
@@ -55,7 +56,7 @@ Example Playbook
          'VREnv': 'PROD',
          'VRProject': 'infra-ansible',
          'VRTeam': 'infra',
-         'zabbix-metadata': 'if-ansible-sample'
+         'zabbix-metadata': 'if-ansible-sample' }
         region: us-east-1
         ec2_sg_id: ['sg-32f1634b']
         ec2_vpc_subnet_id: subnet-0959b37f
@@ -70,7 +71,7 @@ Example Playbook
             docker run nginx
         vivareal_project_name: my-ami
         vivareal_build_version: 1
-        vivareal_project_build: "{{ vivareal_project_name }}-{{ vivareal_build_version}}
+        vivareal_project_build: "{{ vivareal_project_name }}-{{ vivareal_build_version}}"
         ec2_volumes:
           - device_name: /dev/sda1
             volume_type: gp2
@@ -78,7 +79,21 @@ Example Playbook
             delete_on_termination: true
       roles:
         - { role: aws-ec2-provisioning }
-   
+
+
+Example Playbook (termination)
+------------------------------
+
+
+    - hosts: localhost
+      vars:
+        state: absent
+        region: eu-west-1
+        instance_ids: ['i-0eef911d60fe285cf' ]
+      roles:
+        - { role: aws-ec2-provisioning } 
+
+
 
 License
 -------

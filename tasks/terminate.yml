@@ -1,0 +1,9 @@
+---
+- name: terminate instances
+  ec2:
+    instance_tags: "{{ aws_resource_tags | default(omit) }}"
+    instance_ids: "{{ instance_ids }}"
+    state: "{{ state | default('absent') }}"
+    region: "{{ region }}"
+  register: ec2
+

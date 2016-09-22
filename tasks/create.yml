@@ -1,0 +1,51 @@
+---
+# tasks file for aws-ec2-provisioning/
+- fail: msg="The minimum Ansible version required to run is 2.0.1. To upgrade run 'sudo pip install --upgrade ansible'."
+  when: ansible_version.major|int != 2 and ansible_version.minor|int < 0 and ansible_version.revision|int < 1
+
+#TODO merge with aws-lc/find-ami
+- name: Search for the latest vivareal ami
+  ec2_ami_find:
+    name: "{{ ec2_find_ami_name }}"
+    owner: "{{ aws_owner | default('self') }}"
+    sort: name
+    region: "{{ region }}"
+    sort_order: descending
+    sort_end: 1
+  register: ec2_ami_find
+  when: ec2_find_ami_name is defined
+
+- name: set fact ec2_base_image when ec2_find_ami_name is defined
+  set_fact: ec2_base_image="{{ ec2_ami_find.results[0].ami_id }}"
+  when: ec2_find_ami_name is defined
+
+- name: launch instances
+  ec2:
+    assign_public_ip: "{{ ec2_assign_public_ip | default('no') }}"
+    count: "{{ ec2_count | default(1) }}"
+    ebs_optimized: "{{ ec2_ebs_optimized | default(false) }}"
+    group_id: "{{ ec2_sg_id }}"
+    instance_type: "{{ ec2_instance_type | default('t2.micro') }}"
+    instance_profile_name:  "{{ ec2_instance_profile_name | default ('')}}"
+    user_data: "{{ ec2_user_data | default (omit) }}"
+    image: "{{ ec2_base_image }}"
+    key_name: "{{ ec2_key_name }}"
+    monitoring: "{{ ec2_monitoring | default('yes') }}"
+    region: "{{ region }}"
+    vpc_subnet_id: "{{ ec2_vpc_subnet_id }}"
+    instance_tags: "{{ aws_resource_tags }}"
+    state: "{{ state | default('present') }}"
+    volumes: "{{ ec2_volumes | default(omit) }}"
+  register: ec2
+
+- name: Add new instance to host group
+  add_host: hostname="{{ item.private_ip }}" groupname=ec2_launched ec2_id="{{ item.id }}"
+  with_items: "{{ ec2.instances }}"
+
+- name: Wait for SSH to come up
+  wait_for: host="{{ item.private_ip }}" port=22 delay=60 timeout=320 state=started
+  with_items: "{{ ec2.instances }}"
+
+- name: set fact ec2_ami_instance_id
+  set_fact: ec2_ami_instance_id="{{ ec2.instance_ids[0] }}"
+  when: ec2 is defined
