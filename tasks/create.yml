@@ -36,6 +36,7 @@
     instance_tags: "{{ aws_resource_tags }}"
     state: "{{ state | default('present') }}"
     volumes: "{{ ec2_volumes | default(omit) }}"
+    wait: yes
   register: ec2
 
 - name: Add new instance to host group
